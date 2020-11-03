@@ -66,7 +66,12 @@ const Keyboard = {
 
     keyLayout.forEach(key => {
       const keyElement = document.createElement("button");
-      const insertLineBreak = ["backspace", "p", "enter", "?", "ъ", "ю"].indexOf(key) !== -1;
+      let insertLineBreak = ["backspace", "p", "enter", "?"].indexOf(key) !== -1;
+
+      if (this.properties.language === "rus") {
+        insertLineBreak = ["backspace", "ъ", "enter", "."].indexOf(key) !== -1;
+      }
+      
 
       // Add attributes/classes
       keyElement.setAttribute("type", "button");
@@ -133,7 +138,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>Eng</span>";
   
           keyElement.addEventListener("click", () => {
-            this._toggleLanguage();
+            this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
           });
   
@@ -144,7 +149,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>Рус</span>";
     
           keyElement.addEventListener("click", () => {
-            this._toggleLanguage();
+            this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
           });
     
@@ -212,14 +217,19 @@ const Keyboard = {
   _toggleShift() {
     this.properties.shift = !this.properties.shift;
 
-    keyLayoutEnShift = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")"];
+    if (this.properties.language === "eng") {
+      keyLayoutShift = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")"];
+    } else if (this.properties.language === "rus") {
+      keyLayoutShift = ["!", '"', "№", ";", "%", ":", "?", "*", "(", ")"];
+    }
+    
     keyLayoutEnNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
     if (this.properties.shift) {
       for (let i = 0; i < 10; i++) {
         this.elements.keysContainer.removeChild(this.elements.keysContainer.firstChild)
       }
-      this.elements.keysContainer.prepend(this._createKeys(keyLayoutEnShift));
+      this.elements.keysContainer.prepend(this._createKeys(keyLayoutShift));
     } else {
       for (let i = 0; i < 10; i++) {
         this.elements.keysContainer.removeChild(this.elements.keysContainer.firstChild);
@@ -320,14 +330,14 @@ const Keyboard = {
     })
   },
 
-  _toggleLanguage () {
+  _changeLanguage () {
     if (this.properties.language === "eng") {
       this.properties.language = "rus";
       keyLayoutRU = [
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "backspace",
         "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ",
         "caps", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "enter",
-        "done", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю",
+        "done", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".",
         "shift", "space", "Рус",
       ];
 
