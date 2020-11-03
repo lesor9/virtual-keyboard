@@ -88,6 +88,10 @@ const Keyboard = {
             this._triggerEvent("oninput");
           });
 
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.backspace();
+          })
+
           break;
 
         case "caps":
@@ -98,6 +102,10 @@ const Keyboard = {
             this._toggleCapsLock();
             keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
           });
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.caps();
+          })
 
           break;
 
@@ -110,6 +118,10 @@ const Keyboard = {
             this._triggerEvent("oninput");
           });
 
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.enter();
+          })
+
           break;
 
         case "shift":
@@ -120,6 +132,10 @@ const Keyboard = {
             this._toggleShift();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
           });
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.shift();
+          })
 
           break;
 
@@ -132,6 +148,10 @@ const Keyboard = {
             this._triggerEvent("oninput");
           });
 
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
+
           break;
 
         case "Eng":
@@ -142,6 +162,10 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
           });
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
   
           break;
 
@@ -153,6 +177,10 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
           });
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
     
           break;
 
@@ -165,6 +193,10 @@ const Keyboard = {
             this._triggerEvent("onclose");
           });
 
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
+
           break;
         
         case "<":
@@ -172,12 +204,22 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             ////////////////////////////////////
           })
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
+
           break;
         case ">":
           keyElement.innerHTML = "<span>></span>";
           keyElement.addEventListener("click", () => {
             ////////////////////////////////////
           })
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
+
           break;
 
         case "volume_up":
@@ -193,6 +235,10 @@ const Keyboard = {
             this._volume(keyElement);
           });
 
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
+
           break;
 
         default:
@@ -202,6 +248,10 @@ const Keyboard = {
             this.properties.value += this.properties.capsLock || this.properties.shift ? key.toUpperCase() : key.toLowerCase();
             this._triggerEvent("oninput");
           });
+
+          keyElement.addEventListener ("click", () => {
+            this.soundForKeys.default();
+          })
 
           break;
       }
@@ -390,6 +440,37 @@ const Keyboard = {
     }
   },
 
+  soundForKeys : {
+    default () {
+      if (Keyboard.properties.volume === "on") {
+        if (Keyboard.properties.language === "eng") {
+          new Audio("./assets/sounds/default_en.mp3").play()
+        } else if (Keyboard.properties.language === "rus") {
+          new Audio("./assets/sounds/default_ru.mp3").play()
+        }
+      }
+    },
+    backspace () {
+      if (Keyboard.properties.volume === "on") {
+        new Audio("./assets/sounds/backspace.mp3").play();
+      }
+    },
+    shift () {
+      if (Keyboard.properties.volume === "on") {
+        new Audio("./assets/sounds/shift.mp3").play();
+      }
+    },
+    caps () {
+      if (Keyboard.properties.volume === "on") {
+        new Audio("./assets/sounds/caps.mp3").play()
+      }
+    },
+    enter () {
+      if (Keyboard.properties.volume === "on") {
+        new Audio("./assets/sounds/enter.wav").play()
+      }
+    },
+  },
 }
 
 window.addEventListener("DOMContentLoaded", function () {
