@@ -34,9 +34,11 @@ const Keyboard = {
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
 
-    document.addEventListener
-
     // Automatically use keyboard for elements with .use-keyboard-input
+    // document.addEventListener('click', (e) => {
+
+    // });
+
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
       element.addEventListener("focus", () => {
         this.open(element.value, currentValue => {
@@ -182,6 +184,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span><</span>";
 
           keyElement.addEventListener ("click", () => {
+            //////////////////////////
             this.soundForKeys.default();
           })
 
@@ -190,6 +193,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>></span>";
 
           keyElement.addEventListener ("click", () => {
+            //////////////////////////
             this.soundForKeys.default();
           })
 
@@ -214,7 +218,7 @@ const Keyboard = {
           keyElement.textContent = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
 
           keyElement.addEventListener("click", () => {
-            this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+            this.properties.value += this.properties.capsLock || this.properties.shift ? key.toUpperCase() : key.toLowerCase();
             this.soundForKeys.default();
             this._triggerEvent("oninput");
           });
