@@ -86,26 +86,23 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
             this._triggerEvent("oninput");
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.backspace();
-          })
+          });
 
           break;
 
         case "caps":
           keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
           keyElement.innerHTML = createIconHTML("keyboard_capslock");
+          if (this.properties.capsLock) {
+            keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
+          }
 
           keyElement.addEventListener("click", () => {
             this._toggleCapsLock();
             keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.caps();
-          })
+          });
 
           break;
 
@@ -116,11 +113,8 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this.properties.value += "\n";
             this._triggerEvent("oninput");
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.enter();
-          })
+          });
 
           break;
 
@@ -131,11 +125,8 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this._toggleShift();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.shift();
-          })
+          });
 
           break;
 
@@ -146,11 +137,8 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this.properties.value += " ";
             this._triggerEvent("oninput");
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
-          })
+          });
 
           break;
 
@@ -161,11 +149,8 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
-          })
+          });
   
           break;
 
@@ -176,11 +161,8 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
-          })
+          });
     
           break;
 
@@ -191,19 +173,13 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this.close();
             this._triggerEvent("onclose");
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
-          })
+          });
 
           break;
         
         case "<":
           keyElement.innerHTML = "<span><</span>";
-          keyElement.addEventListener("click", () => {
-            ////////////////////////////////////
-          })
 
           keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
@@ -212,9 +188,6 @@ const Keyboard = {
           break;
         case ">":
           keyElement.innerHTML = "<span>></span>";
-          keyElement.addEventListener("click", () => {
-            ////////////////////////////////////
-          })
 
           keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
@@ -229,29 +202,22 @@ const Keyboard = {
           } else if (this.properties.volume === "off") {
             keyElement.innerHTML = createIconHTML("volume_off");
           }
-          
 
           keyElement.addEventListener("click", () => {
             this._volume(keyElement);
-          });
-
-          keyElement.addEventListener ("click", () => {
             this.soundForKeys.default();
           })
 
           break;
 
         default:
-          keyElement.textContent = key.toLowerCase();
+          keyElement.textContent = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
 
           keyElement.addEventListener("click", () => {
-            this.properties.value += this.properties.capsLock || this.properties.shift ? key.toUpperCase() : key.toLowerCase();
+            this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+            this.soundForKeys.default();
             this._triggerEvent("oninput");
           });
-
-          keyElement.addEventListener ("click", () => {
-            this.soundForKeys.default();
-          })
 
           break;
       }
@@ -428,6 +394,8 @@ const Keyboard = {
       this.elements.keysContainer.innerHTML = "";
       this.elements.keysContainer.appendChild(this._createKeys());
     }
+
+    this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard__key");
   },
 
   _volume (keyElement) {
