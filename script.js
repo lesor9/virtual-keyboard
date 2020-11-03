@@ -15,6 +15,7 @@ const Keyboard = {
     capsLock: false,
     shift: false,
     language: "eng",
+    volume: "on",
   },
 
   init() {
@@ -52,7 +53,7 @@ const Keyboard = {
     "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
     "caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", "enter",
     "done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "?",
-    "shift", "space", "Eng"
+    "volume_up", "shift", "space", "Eng", "<", ">",
   ],
 
   _createKeys(keyLayoutParameter = this.keyLayoutEn) {
@@ -162,6 +163,34 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             this.close();
             this._triggerEvent("onclose");
+          });
+
+          break;
+        
+        case "<":
+          keyElement.innerHTML = "<span><</span>";
+          keyElement.addEventListener("click", () => {
+            ////////////////////////////////////
+          })
+          break;
+        case ">":
+          keyElement.innerHTML = "<span>></span>";
+          keyElement.addEventListener("click", () => {
+            ////////////////////////////////////
+          })
+          break;
+
+        case "volume_up":
+          keyElement.classList.add("keyboard__key--wide");
+          if (this.properties.volume === "on") {
+            keyElement.innerHTML = createIconHTML("volume_up");
+          } else if (this.properties.volume === "off") {
+            keyElement.innerHTML = createIconHTML("volume_off");
+          }
+          
+
+          keyElement.addEventListener("click", () => {
+            this._volume(keyElement);
           });
 
           break;
@@ -338,7 +367,7 @@ const Keyboard = {
         "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ",
         "caps", "ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "enter",
         "done", "я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".",
-        "shift", "space", "Рус",
+        "volume_up", "shift", "space", "Рус", "<", ">",
       ];
 
       this.elements.keysContainer.innerHTML = "";
@@ -348,6 +377,16 @@ const Keyboard = {
 
       this.elements.keysContainer.innerHTML = "";
       this.elements.keysContainer.appendChild(this._createKeys());
+    }
+  },
+
+  _volume (keyElement) {
+    if (this.properties.volume === "on") {
+      this.properties.volume = "off"
+      keyElement.innerHTML = `<i class="material-icons">volume_off</i>`;
+    } else {
+      this.properties.volume = "on";
+      keyElement.innerHTML = `<i class="material-icons">volume_up</i>`;
     }
   },
 
