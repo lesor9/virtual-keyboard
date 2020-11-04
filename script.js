@@ -15,8 +15,8 @@ rec.addEventListener("end", function(e) {
   if (Keyboard.properties.speech.trim()) {
     let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
 
+    Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor);
     Keyboard.properties.cursor += value.length;
-    Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor - 1) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor - 1);
     Keyboard._moveCursor();
     Keyboard.properties.speech = "";
     Keyboard._triggerEvent("oninput");
@@ -165,8 +165,9 @@ const Keyboard = {
 
           keyElement.addEventListener("click", () => {
             textarea.focus();
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor) + "\n" + this.properties.value.substr(this.properties.cursor);
             Keyboard.properties.cursor++;
-            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + "\n" + this.properties.value.substr(this.properties.cursor - 1);
+
             this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.enter();
@@ -193,8 +194,9 @@ const Keyboard = {
 
           keyElement.addEventListener("click", () => {
             textarea.focus();
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor) + " " + this.properties.value.substr(this.properties.cursor);
             Keyboard.properties.cursor++;
-            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + " " + this.properties.value.substr(this.properties.cursor - 1);
+
             this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.default();
@@ -306,7 +308,6 @@ const Keyboard = {
 
           keyElement.addEventListener("click", () => {
             textarea.focus();
-            this.properties.cursor++;
 
             let capsOrShift = this.properties.capsLock || this.properties.shift;
 
@@ -314,7 +315,8 @@ const Keyboard = {
             if (this.properties.capsLock === true && this.properties.shift === true) capsAndShift = false;
 
             keyValue = capsOrShift && capsAndShift ? key.toUpperCase() : key.toLowerCase();
-            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + keyValue + this.properties.value.substr(this.properties.cursor - 1);
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor) + keyValue + this.properties.value.substr(this.properties.cursor);
+            this.properties.cursor++;
 
             this.soundForKeys.default();
             this._moveCursor();
