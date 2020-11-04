@@ -12,10 +12,12 @@ rec.addEventListener("result", function(e) {
 })
 
 rec.addEventListener("end", function(e) {
-  Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
-  Keyboard.properties.speech = "";
-  Keyboard._triggerEvent("oninput");
-
+  if (Keyboard.properties.speech.trim()) {
+    Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+    Keyboard.properties.speech = "";
+    Keyboard._triggerEvent("oninput");
+  }
+  
   if (Keyboard.properties.mic === "on") {
     rec.start();
   }
@@ -44,22 +46,17 @@ const Keyboard = {
   },
 
   init() {
-    // Create main elements
     this.elements.main = document.createElement("div");
     this.elements.keysContainer = document.createElement("div");
 
-    // Setup main elements
     this.elements.main.classList.add("keyboard", "keyboard--hidden");
     this.elements.keysContainer.classList.add("keyboard__keys");
     this.elements.keysContainer.appendChild(this._createKeys());
 
     this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard__key");
 
-    // Add to DOM
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
-
-    // Automatically use keyboard for elements with .use-keyboard-input
 
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
       element.addEventListener("focus", () => {
@@ -84,7 +81,6 @@ const Keyboard = {
     const fragment = document.createDocumentFragment();
     const keyLayout = keyLayoutParameter;
 
-    // Creates HTML for an icon
     const createIconHTML = (icon_name) => {
       return `<i class="material-icons">${icon_name}</i>`;
     };
@@ -97,8 +93,6 @@ const Keyboard = {
         insertLineBreak = ["backspace", "ъ", "enter", "."].indexOf(key) !== -1;
       }
       
-
-      // Add attributes/classes
       keyElement.setAttribute("type", "button");
       keyElement.classList.add("keyboard__key");
 
@@ -242,8 +236,12 @@ const Keyboard = {
           break;
 
         case "mic":
-          keyElement.innerHTML = createIconHTML("mic_off");
-          this.properties.mic = "off";
+          if (this.properties.mic === "on") {
+            keyElement.innerHTML = createIconHTML("mic");
+          } else if (this.properties.mic === "off") {
+            keyElement.innerHTML = createIconHTML("mic_off");
+          }
+          
 
           keyElement.addEventListener("click", () => {
             this.soundForKeys.default();
