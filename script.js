@@ -1,3 +1,28 @@
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+var rec = new SpeechRecognition();
+rec.interimResults = true;
+
+rec.addEventListener("result", function(e) {
+  console.log(e);
+  var text = Array.from(e.results)
+    .map(result => result[0])
+    .map(result => result.transcript)
+    .join('');
+  
+  Keyboard.properties.speech = text;
+})
+
+rec.addEventListener("end", function(e) {
+  Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+  Keyboard.properties.speech = "";
+  Keyboard._triggerEvent("oninput");
+  try {
+    rec.start();
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 const Keyboard = {
   elements: {
     main: null,
@@ -151,8 +176,9 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
-            this._mic();
           });
+
+          rec.stop();
   
           break;
 
@@ -164,8 +190,9 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
-            this._mic();
           });
+
+          rec.stop();
     
           break;
 
@@ -224,6 +251,9 @@ const Keyboard = {
             this.soundForKeys.default();
             this._mic(keyElement);
           })
+
+          if (this.properties.language === "eng") rec.lang = 'en-US';
+          if (this.properties.language === "rus") rec.lang = 'ru-RU';
 
           break;
 
@@ -431,38 +461,15 @@ const Keyboard = {
   },
 
   _mic (keyElement) {
-    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var rec = new SpeechRecognition();
-    rec.interimResults = true;
-    if (this.properties.language === "eng") rec.lang = 'en-US';
-    if (this.properties.language === "rus") rec.lang = 'ru-RU';
-
     if (this.properties.mic === "off") {
       this.properties.mic = "on";
       keyElement.innerHTML = `<i class="material-icons">mic</i>`;
-      
       rec.start();
 
-      rec.addEventListener("result", function(e) {
-        console.log(e);
-        var text = Array.from(e.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
-          .join('');
-        
-        Keyboard.properties.speech = text;
-      })
-
-      rec.addEventListener("end", function(e) {
-        Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
-        Keyboard.properties.speech = "";
-        Keyboard._triggerEvent("oninput");
-        rec.start();
-      });
     } else if (this.properties.mic === "on") {
       this.properties.mic = "off";
       keyElement.innerHTML = `<i class="material-icons">mic_off</i>`;
-      rec.stop();
+      rec.abort();
     }
   },
 
