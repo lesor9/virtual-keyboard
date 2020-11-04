@@ -1,4 +1,4 @@
-window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+window.SpeechRecognition = window.webkitSpeechRecognition;
 const rec = new SpeechRecognition();
 rec.interimResults = true;
 
