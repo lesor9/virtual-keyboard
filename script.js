@@ -132,7 +132,7 @@ const Keyboard = {
           keyElement.addEventListener("click", () => {
             Keyboard.properties.cursor--;
             textarea.focus();
-            this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
+            this.properties.value = this.properties.value.substring(0, this.properties.cursor) + this.properties.value.substring(this.properties.cursor + 1);
             this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.backspace();
