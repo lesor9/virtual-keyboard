@@ -1,36 +1,31 @@
-try {
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const rec = new SpeechRecognition();
-  rec.interimResults = true;
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const rec = new SpeechRecognition();
+rec.interimResults = true;
 
-  rec.addEventListener("result", function(e) {
-    var text = Array.from(e.results)
-      .map(result => result[0])
-      .map(result => result.transcript)
-      .join('');
-    
-    Keyboard.properties.speech = text;
-  })
+rec.addEventListener("result", function(e) {
+  var text = Array.from(e.results)
+    .map(result => result[0])
+    .map(result => result.transcript)
+    .join('');
+  
+  Keyboard.properties.speech = text;
+})
 
-  rec.addEventListener("end", function(e) {
-    if (Keyboard.properties.speech.trim()) {
-      let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+rec.addEventListener("end", function(e) {
+  if (Keyboard.properties.speech.trim()) {
+    let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
 
-      Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor);
-      Keyboard.properties.cursor += value.length;
-      Keyboard._moveCursor();
-      Keyboard.properties.speech = "";
-      Keyboard._triggerEvent("oninput");
-    }
-    
-    if (Keyboard.properties.mic === "on") {
-      rec.start();
-    }
-  });
-} catch {
-  console.log("Ваш браузер не гугл хром, поэтому у Вас распознавание речи не будет работать.");
-}
-
+    Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor);
+    Keyboard.properties.cursor += value.length;
+    Keyboard._moveCursor();
+    Keyboard.properties.speech = "";
+    Keyboard._triggerEvent("oninput");
+  }
+  
+  if (Keyboard.properties.mic === "on") {
+    rec.start();
+  }
+});
 
 const Keyboard = {
   elements: {
@@ -87,10 +82,6 @@ const Keyboard = {
 
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
-
-    document.querySelector(".keyboard").addEventListener('click', () => {
-      document.querySelector(".use-keyboard-input").focus();
-    });
 
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
       element.addEventListener("click", () => {
@@ -224,12 +215,7 @@ const Keyboard = {
             this.soundForKeys.default();
           });
 
-          try{
-            rec.stop();
-          } catch {
-            console.log("Браузер не хром)");
-          }
-          
+          rec.stop();
   
           break;
 
@@ -244,11 +230,7 @@ const Keyboard = {
             this.soundForKeys.default();
           });
 
-          try{
-            rec.stop();
-          } catch {
-            console.log("Браузер не хром)");
-          }
+          rec.stop();
     
           break;
 
@@ -316,12 +298,8 @@ const Keyboard = {
             this._mic(keyElement);
           })
 
-          try{
-            if (this.properties.language === "eng") rec.lang = 'en-US';
-            if (this.properties.language === "rus") rec.lang = 'ru-RU';
-          } catch {
-            console.log("Браузер не хром)");
-          }
+          if (this.properties.language === "eng") rec.lang = 'en-US';
+          if (this.properties.language === "rus") rec.lang = 'ru-RU';
 
           break;
 
