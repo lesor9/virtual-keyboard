@@ -102,7 +102,7 @@ const Keyboard = {
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "backspace",
     "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
     "caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", "enter",
-    "done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "?",
+    "done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/",
     "volume", "shift", "space", "Eng", "<", ">", "mic",
   ],
 
@@ -118,7 +118,7 @@ const Keyboard = {
 
     keyLayout.forEach(key => {
       const keyElement = document.createElement("button");
-      let insertLineBreak = ["backspace", "p", "enter", "?"].indexOf(key) !== -1;
+      let insertLineBreak = ["backspace", "p", "enter", "/"].indexOf(key) !== -1;
 
       if (this.properties.language === "rus") {
         insertLineBreak = ["backspace", "ъ", "enter", "."].indexOf(key) !== -1;
