@@ -1,31 +1,36 @@
-window.SpeechRecognition = window.webkitSpeechRecognition;
-const rec = new SpeechRecognition();
-rec.interimResults = true;
+try {
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SpeechRecognition();
+  rec.interimResults = true;
 
-rec.addEventListener("result", function(e) {
-  var text = Array.from(e.results)
-    .map(result => result[0])
-    .map(result => result.transcript)
-    .join('');
-  
-  Keyboard.properties.speech = text;
-})
+  rec.addEventListener("result", function(e) {
+    var text = Array.from(e.results)
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('');
+    
+    Keyboard.properties.speech = text;
+  })
 
-rec.addEventListener("end", function(e) {
-  if (Keyboard.properties.speech.trim()) {
-    let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+  rec.addEventListener("end", function(e) {
+    if (Keyboard.properties.speech.trim()) {
+      let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
 
-    Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor);
-    Keyboard.properties.cursor += value.length;
-    Keyboard._moveCursor();
-    Keyboard.properties.speech = "";
-    Keyboard._triggerEvent("oninput");
-  }
-  
-  if (Keyboard.properties.mic === "on") {
-    rec.start();
-  }
-});
+      Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor);
+      Keyboard.properties.cursor += value.length;
+      Keyboard._moveCursor();
+      Keyboard.properties.speech = "";
+      Keyboard._triggerEvent("oninput");
+    }
+    
+    if (Keyboard.properties.mic === "on") {
+      rec.start();
+    }
+  });
+} catch {
+  console.log("Ваш браузер не гугл хром, поэтому у Вас распознавание речи не будет работать.");
+}
+
 
 const Keyboard = {
   elements: {
@@ -219,7 +224,12 @@ const Keyboard = {
             this.soundForKeys.default();
           });
 
-          rec.stop();
+          try{
+            rec.stop();
+          } catch {
+            console.log("Браузер не хром)");
+          }
+          
   
           break;
 
@@ -234,7 +244,11 @@ const Keyboard = {
             this.soundForKeys.default();
           });
 
-          rec.stop();
+          try{
+            rec.stop();
+          } catch {
+            console.log("Браузер не хром)");
+          }
     
           break;
 
@@ -302,8 +316,12 @@ const Keyboard = {
             this._mic(keyElement);
           })
 
-          if (this.properties.language === "eng") rec.lang = 'en-US';
-          if (this.properties.language === "rus") rec.lang = 'ru-RU';
+          try{
+            if (this.properties.language === "eng") rec.lang = 'en-US';
+            if (this.properties.language === "rus") rec.lang = 'ru-RU';
+          } catch {
+            console.log("Браузер не хром)");
+          }
 
           break;
 
