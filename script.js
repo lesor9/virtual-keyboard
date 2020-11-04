@@ -14,7 +14,8 @@ rec.addEventListener("result", function(e) {
 rec.addEventListener("end", function(e) {
   if (Keyboard.properties.speech.trim()) {
     let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
-    Keyboard.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + value + this.properties.value.substr(this.properties.cursor - 1);
+
+    Keyboard.properties.value = Keyboard.properties.value.substr(0, Keyboard.properties.cursor - 1) + value + Keyboard.properties.value.substr(Keyboard.properties.cursor - 1);
     Keyboard.properties.speech = "";
     Keyboard._triggerEvent("oninput");
   }
