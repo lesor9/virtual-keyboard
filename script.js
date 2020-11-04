@@ -151,6 +151,7 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
+            this._mic();
           });
   
           break;
@@ -163,6 +164,7 @@ const Keyboard = {
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
+            this._mic();
           });
     
           break;
@@ -216,6 +218,7 @@ const Keyboard = {
 
         case "mic":
           keyElement.innerHTML = createIconHTML("mic_off");
+          this.properties.mic = "off";
 
           keyElement.addEventListener("click", () => {
             this.soundForKeys.default();
@@ -431,16 +434,17 @@ const Keyboard = {
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     var rec = new SpeechRecognition();
     rec.interimResults = true;
-
+    if (this.properties.language === "eng") rec.lang = 'en-US';
+    if (this.properties.language === "rus") rec.lang = 'ru-RU';
 
     if (this.properties.mic === "off") {
-      console.log("start");
       this.properties.mic = "on";
       keyElement.innerHTML = `<i class="material-icons">mic</i>`;
       
       rec.start();
 
       rec.addEventListener("result", function(e) {
+        console.log(e);
         var text = Array.from(e.results)
           .map(result => result[0])
           .map(result => result.transcript)
@@ -456,10 +460,9 @@ const Keyboard = {
         rec.start();
       });
     } else if (this.properties.mic === "on") {
-      rec.stop();
-      console.log("end");
       this.properties.mic = "off";
       keyElement.innerHTML = `<i class="material-icons">mic_off</i>`;
+      rec.stop();
     }
   },
 
