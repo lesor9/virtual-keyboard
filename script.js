@@ -1,9 +1,8 @@
 window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-var rec = new SpeechRecognition();
+const rec = new SpeechRecognition();
 rec.interimResults = true;
 
 rec.addEventListener("result", function(e) {
-  console.log(e);
   var text = Array.from(e.results)
     .map(result => result[0])
     .map(result => result.transcript)
@@ -16,10 +15,9 @@ rec.addEventListener("end", function(e) {
   Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
   Keyboard.properties.speech = "";
   Keyboard._triggerEvent("oninput");
-  try {
+
+  if (Keyboard.properties.mic === "on") {
     rec.start();
-  } catch (e) {
-    console.log(e);
   }
 });
 
@@ -465,11 +463,10 @@ const Keyboard = {
       this.properties.mic = "on";
       keyElement.innerHTML = `<i class="material-icons">mic</i>`;
       rec.start();
-
     } else if (this.properties.mic === "on") {
       this.properties.mic = "off";
       keyElement.innerHTML = `<i class="material-icons">mic_off</i>`;
-      rec.abort();
+      rec.stop();
     }
   },
 
