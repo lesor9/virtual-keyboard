@@ -83,6 +83,10 @@ const Keyboard = {
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
 
+    document.querySelector(".keyboard").addEventListener('click', () => {
+      document.querySelector(".use-keyboard-input").focus();
+    });
+
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
       element.addEventListener("click", () => {
         this._moveCursor(element.selectionStart);
