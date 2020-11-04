@@ -17,6 +17,7 @@ const Keyboard = {
     language: "eng",
     volume: "on",
     mic: "off",
+    speech: "",
   },
 
   init() {
@@ -214,15 +215,11 @@ const Keyboard = {
           break;
 
         case "mic":
-          if (this.properties.mic === "on") {
-            keyElement.innerHTML = createIconHTML("mic");
-          } else if (this.properties.mic === "off") {
-            keyElement.innerHTML = createIconHTML("mic_off");
-          }
+          keyElement.innerHTML = createIconHTML("mic_off");
 
           keyElement.addEventListener("click", () => {
-            this._mic(keyElement);
             this.soundForKeys.default();
+            this._mic(keyElement);
           })
 
           break;
@@ -256,7 +253,7 @@ const Keyboard = {
 
   _triggerEvent(handlerName) {
     if (typeof this.eventHandlers[handlerName] == "function") {
-      this.eventHandlers[handlerName](this.properties.value);
+      this.eventHandlers[handlerName](this.properties.value + this.properties.speech);
     }
   },
 
@@ -431,12 +428,38 @@ const Keyboard = {
   },
 
   _mic (keyElement) {
-    if (this.properties.mic === "on") {
-      this.properties.mic = "off"
-      keyElement.innerHTML = `<i class="material-icons">mic_off</i>`;
-    } else {
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var rec = new SpeechRecognition();
+    rec.interimResults = true;
+
+
+    if (this.properties.mic === "off") {
+      console.log("start");
       this.properties.mic = "on";
       keyElement.innerHTML = `<i class="material-icons">mic</i>`;
+      
+      rec.start();
+
+      rec.addEventListener("result", function(e) {
+        var text = Array.from(e.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        
+        Keyboard.properties.speech = text;
+      })
+
+      rec.addEventListener("end", function(e) {
+        Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+        Keyboard.properties.speech = "";
+        Keyboard._triggerEvent("oninput");
+        rec.start();
+      });
+    } else if (this.properties.mic === "on") {
+      rec.stop();
+      console.log("end");
+      this.properties.mic = "off";
+      keyElement.innerHTML = `<i class="material-icons">mic_off</i>`;
     }
   },
 
