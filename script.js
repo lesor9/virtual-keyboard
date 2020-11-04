@@ -13,7 +13,8 @@ rec.addEventListener("result", function(e) {
 
 rec.addEventListener("end", function(e) {
   if (Keyboard.properties.speech.trim()) {
-    Keyboard.properties.value += Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+    let value = Keyboard.properties.value ? " " + Keyboard.properties.speech : Keyboard.properties.speech;
+    Keyboard.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + value + this.properties.value.substr(this.properties.cursor - 1);
     Keyboard.properties.speech = "";
     Keyboard._triggerEvent("oninput");
   }
@@ -43,6 +44,27 @@ const Keyboard = {
     volume: "on",
     mic: "off",
     speech: "",
+    cursor: 0,
+  },
+
+  _moveCursor(cursor = this.properties.cursor) {
+    let textarea = document.querySelector(".use-keyboard-input");
+    this.properties.cursor = cursor;
+
+    if (this.properties.cursor < 0) {
+      this.properties.cursor = 0;
+      cursor = 0;
+    }
+
+    if (this.properties.cursor > this.properties.value.length) {
+      this.properties.cursor = this.properties.value.length;
+      cursor = this.properties.value.length;
+    }
+
+    textarea.value = this.properties.value;
+    textarea.focus();
+    textarea.selectionStart = cursor;
+    textarea.selectionEnd = cursor;
   },
 
   init() {
@@ -59,6 +81,10 @@ const Keyboard = {
     document.body.appendChild(this.elements.main);
 
     document.querySelectorAll(".use-keyboard-input").forEach(element => {
+      element.addEventListener("click", () => {
+        this._moveCursor(element.selectionStart);
+      })
+
       element.addEventListener("focus", () => {
         this.open(element.value, currentValue => {
           element.value = currentValue;
@@ -78,6 +104,8 @@ const Keyboard = {
   ],
 
   _createKeys(keyLayoutParameter = this.keyLayoutEn) {
+    let textarea = document.querySelector(".use-keyboard-input");
+
     const fragment = document.createDocumentFragment();
     const keyLayout = keyLayoutParameter;
 
@@ -102,7 +130,10 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("backspace");
 
           keyElement.addEventListener("click", () => {
+            Keyboard.properties.cursor--;
+            textarea.focus();
             this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
+            this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.backspace();
           });
@@ -117,6 +148,7 @@ const Keyboard = {
           }
 
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this._toggleCapsLock();
             keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
             this.soundForKeys.caps();
@@ -129,7 +161,10 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("keyboard_return");
 
           keyElement.addEventListener("click", () => {
-            this.properties.value += "\n";
+            textarea.focus();
+            Keyboard.properties.cursor++;
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + "\n" + this.properties.value.substr(this.properties.cursor - 1);
+            this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.enter();
           });
@@ -141,6 +176,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>Shift</span>";
 
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this._toggleShift();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.shift();
@@ -153,7 +189,10 @@ const Keyboard = {
           keyElement.innerHTML = createIconHTML("space_bar");
 
           keyElement.addEventListener("click", () => {
-            this.properties.value += " ";
+            textarea.focus();
+            Keyboard.properties.cursor++;
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + " " + this.properties.value.substr(this.properties.cursor - 1);
+            this._moveCursor();
             this._triggerEvent("oninput");
             this.soundForKeys.default();
           });
@@ -165,6 +204,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>Eng</span>";
   
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
@@ -179,6 +219,7 @@ const Keyboard = {
           keyElement.innerHTML = "<span>Рус</span>";
     
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this._changeLanguage();
             keyElement.classList.toggle("keyboard__key--active", this.properties.shift);
             this.soundForKeys.default();
@@ -201,20 +242,22 @@ const Keyboard = {
           break;
         
         case "<":
-          keyElement.innerHTML = "<span><</span>";
+          keyElement.innerHTML = createIconHTML("keyboard_arrow_left");
 
           keyElement.addEventListener ("click", () => {
-            //////////////////////////
+            Keyboard.properties.cursor--;
+            this._moveCursor();
             this.soundForKeys.default();
           })
 
           break;
 
         case ">":
-          keyElement.innerHTML = "<span>></span>";
+          keyElement.innerHTML = createIconHTML("keyboard_arrow_right");
 
           keyElement.addEventListener ("click", () => {
-            //////////////////////////
+            Keyboard.properties.cursor++;
+            this._moveCursor();
             this.soundForKeys.default();
           })
 
@@ -229,6 +272,7 @@ const Keyboard = {
           }
 
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this._volume(keyElement);
             this.soundForKeys.default();
           })
@@ -244,6 +288,7 @@ const Keyboard = {
           
 
           keyElement.addEventListener("click", () => {
+            textarea.focus();
             this.soundForKeys.default();
             this._mic(keyElement);
           })
@@ -257,13 +302,19 @@ const Keyboard = {
           keyElement.textContent = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
 
           keyElement.addEventListener("click", () => {
+            textarea.focus();
+            this.properties.cursor++;
+
             let capsOrShift = this.properties.capsLock || this.properties.shift;
 
             let capsAndShift = true;
             if (this.properties.capsLock === true && this.properties.shift === true) capsAndShift = false;
 
-            this.properties.value += capsOrShift && capsAndShift ? key.toUpperCase() : key.toLowerCase();
+            keyValue = capsOrShift && capsAndShift ? key.toUpperCase() : key.toLowerCase();
+            this.properties.value = this.properties.value.substr(0, this.properties.cursor - 1) + keyValue + this.properties.value.substr(this.properties.cursor - 1);
+
             this.soundForKeys.default();
+            this._moveCursor();
             this._triggerEvent("oninput");
           });
 
@@ -372,6 +423,8 @@ const Keyboard = {
       if (e.key == "Enter") eventKey = 'keyboard_return';
       if (e.key == "CapsLock") eventKey = 'keyboard_capslock';
       if (e.key == "Shift") eventKey = 'Shift';
+      if (e.key == "ArrowLeft") eventKey = 'keyboard_arrow_left';
+      if (e.key == "ArrowRight") eventKey = 'keyboard_arrow_right';
 
       for (key of this.elements.keys) {
         if (key.childElementCount === 0) {
@@ -400,6 +453,8 @@ const Keyboard = {
       if (e.key == "Enter") eventKey = 'keyboard_return';
       if (e.key == "CapsLock") eventKey = 'keyboard_capslock';
       if (e.key == "Shift") eventKey = 'Shift';
+      if (e.key == "ArrowLeft") eventKey = 'keyboard_arrow_left';
+      if (e.key == "ArrowRight") eventKey = 'keyboard_arrow_right';
 
       for (key of this.elements.keys) {
         if (key.childElementCount === 0) {
